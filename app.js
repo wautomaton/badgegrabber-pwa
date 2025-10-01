@@ -4,45 +4,34 @@ const canvas = document.getElementById('snapshot');
 const captureBtn = document.getElementById('capture');
 const form = document.getElementById('detailsForm');
 const entriesDiv = document.getElementById('entries');
-
 const switchBtn = document.getElementById('switchCamera');
+
 let currentStream;
-let videoDevices = [];
-let currentDeviceIndex = 0;
-
-// List available cameras
-navigator.mediaDevices.enumerateDevices().then(devices => {
-  videoDevices = devices.filter(device => device.kind === 'videoinput');
-  if (videoDevices.length > 0) {
-    startCamera(videoDevices[currentDeviceIndex].deviceId);
-  }
-});
-
-// Start camera with selected device
-function startCamera(deviceId) {
+//camera switching functionality
+function startCamera(facingMode = 'environment') {
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
 
   navigator.mediaDevices.getUserMedia({
-    video: { deviceId: { exact: deviceId } }
+    video: { facingMode }
   }).then(stream => {
     currentStream = stream;
     video.srcObject = stream;
+    cameraLabel.textContent = `Active Camera: ${facingMode === 'user' ? 'Front' : 'Rear'}`;
   }).catch(err => {
     console.error("Camera error:", err);
   });
 }
 
-// Switch camera on button click
+// Toggle between front and rear
+let usingFrontCamera = false;
 switchBtn.onclick = () => {
-  if (videoDevices.length > 1) {
-    currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
-    startCamera(videoDevices[currentDeviceIndex].deviceId);
-  } else {
-    alert("Only one camera detected.");
-  }
+  usingFrontCamera = !usingFrontCamera;
+  startCamera(usingFrontCamera ? 'user' : 'environment');
 };
+
+//end camera switching
 
 navigator.mediaDevices.getUserMedia({ video: true })
   .then(stream => video.srcObject = stream);
