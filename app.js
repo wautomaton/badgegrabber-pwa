@@ -48,10 +48,7 @@ captureBtn.onclick = () => {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
-  imageData = canvas.toDataURL('image/png');  
-  captureBtn.style.backgroundColor = '#28a745'; // Bootstrap green
-  captureBtn.textContent = 'Badge Captured';
-
+  imageData = canvas.toDataURL('image/png');
 };
 
 // Save form data
@@ -67,12 +64,6 @@ form.onsubmit = function (e) {
   form.reset();
   imageData = null;
   loadEntries();
-
-  
-  // Reset capture button
-  captureBtn.style.backgroundColor = '#007bff';
-  captureBtn.textContent = 'Capture Badge';
-
 };
 
 // Service Worker Registration
@@ -101,20 +92,16 @@ function exportToCSV() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
 
-  
     const now = new Date();
     const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
-    const basestring = "badge_entries";
-    const filename = `${basestring}${timestamp}`;
 
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", filename);
+    link.setAttribute("download", `badge_entries_${timestamp}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 }
-
 
 const resetBtn = document.getElementById('reset');
 
