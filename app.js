@@ -60,7 +60,7 @@ form.onsubmit = function (e) {
   const tx = db.transaction("entries", "readwrite");
   const store = tx.objectStore("entries");
   store.add({ email, notes, image: imageData });
-
+  exportToCSV();
   form.reset();
   imageData = null;
   loadEntries();
@@ -71,4 +71,30 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js')
     .then(reg => console.log('Service Worker registered:', reg.scope))
     .catch(err => console.error('Service Worker registration failed:', err));
+}
+
+function exportToCSV() {
+  const tx = db.transaction("entries", "readonly");
+  const store = tx.objectStore("entries");
+  const request = store.getAll();
+
+  request.onsuccess = function () {
+    const entries = request.result;
+    let csvContent = "data:text/csv;charset=utf-8,Email,Notes,Image\n";
+
+    entries.forEach(entry => {
+      const email = entry.email.replace(/"/g, '""');
+      const notes = entry.notes.replace(/"/g, '""');
+      const image = entry.image.replace(/"/g, '""');
+      csvContent += `"${email}","${notes}","${image}"\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "badge_entries.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 }
