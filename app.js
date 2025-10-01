@@ -82,35 +82,29 @@ if ('serviceWorker' in navigator) {
     .catch(err => console.error('Service Worker registration failed:', err));
 }
 
-function exportToCSV() {
-  const tx = db.transaction("entries", "readonly");
-  const store = tx.objectStore("entries");
-  const request = store.getAll();
+function exportToCSV(data) {
+  const csvRows = [
+    ['Email', 'Notes', 'Image'],
+    ...data.map(entry => [entry.email, entry.notes, entry.image])
+  ];
 
-  request.onsuccess = function () {
-    const entries = request.result;
-    let csvContent = "data:text/csv;charset=utf-8,Email,Notes,Image\n";
+  const csvContent = csvRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
 
-    entries.forEach(entry => {
-      const email = entry.email.replace(/"/g, '""');
-      const notes = entry.notes.replace(/"/g, '""');
-      const image = entry.image.replace(/"/g, '""');
-      csvContent += `"${email}","${notes}","${image}"\n`;
-    });
+  // Generate timestamp
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
+  const filename = `badge_entries_${timestamp}.csv`;
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
 
-  
-    const now = new Date();
-    const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
-
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `badge_entries_${timestamp}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link); // Required for Firefox
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 const resetBtn = document.getElementById('reset');
