@@ -33,3 +33,16 @@ button {
   max-width: 100px;
   display: block;
 }
+
+.entry {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #fff;
+}
+
+.entry img {
+  max-width: 200px;
+  display: block;
+  margin-bottom: 0.5em;
+}

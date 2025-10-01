@@ -135,6 +135,51 @@ if ('serviceWorker' in navigator) {
     .catch(err => console.error('Service Worker registration failed:', err));
 }
 
+
+function loadEntries() {
+  const tx = db.transaction("entries", "readonly");
+  const store = tx.objectStore("entries");
+  const request = store.getAll();
+
+  request.onsuccess = function () {
+    const entries = request.result;
+    entriesDiv.innerHTML = '';
+
+    entries.forEach(entry => {
+      const entryDiv = document.createElement('div');
+      entryDiv.classList.add('entry');
+
+      entryDiv.innerHTML = `
+        ${entry.image}
+        <p><strong>Email:</strong> ${entry.email}</p>
+        <p><strong>Notes:</strong> ${entry.notes}</p>
+        <p><strong>Captured:</strong> ${entry.timestamp || 'Unknown'}</p>
+      `;
+
+      entriesDiv.appendChild(entryDiv);
+    });
+  }
+}
+
+const resetBtn = document.getElementById('reset');
+
+resetBtn.onclick = () => {
+  const tx = db.transaction("entries", "readwrite");
+  const store = tx.objectStore("entries");
+  const clearRequest = store.clear();
+
+  clearRequest.onsuccess = () => {
+    entriesDiv.innerHTML = '';
+    alert("All data has been cleared.");
+  };
+
+  clearRequest.onerror = () => {
+    alert("Failed to clear data.");
+  };
+};
+
+//depracations
+//export to CSV - depracated
 function exportToCSV() {
   const tx = db.transaction("entries", "readonly");
   const store = tx.objectStore("entries");
@@ -166,6 +211,7 @@ function exportToCSV() {
   };
 }
 
+//export to JSON - depracated
 function exportToJSON(data) {
   const jsonString = JSON.stringify(data, null, 2);
 
@@ -185,36 +231,3 @@ function exportToJSON(data) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
-
-function loadEntries() {
-  const tx = db.transaction("entries", "readonly");
-  const store = tx.objectStore("entries");
-  const request = store.getAll();
-
-  request.onsuccess = function () {
-    const entries = request.result;
-    // Display entries in UI...
-    
-    // Add export button logic
-    document.getElementById('exportBtn').onclick = () => {
-      exportToJSON(entries);
-    };
-  };
-}
-
-const resetBtn = document.getElementById('reset');
-
-resetBtn.onclick = () => {
-  const tx = db.transaction("entries", "readwrite");
-  const store = tx.objectStore("entries");
-  const clearRequest = store.clear();
-
-  clearRequest.onsuccess = () => {
-    entriesDiv.innerHTML = '';
-    alert("All data has been cleared.");
-  };
-
-  clearRequest.onerror = () => {
-    alert("Failed to clear data.");
-  };
-};
