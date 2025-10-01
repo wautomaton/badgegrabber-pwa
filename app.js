@@ -98,3 +98,20 @@ function exportToCSV() {
     document.body.removeChild(link);
   };
 }
+
+const resetBtn = document.getElementById('reset');
+
+resetBtn.onclick = () => {
+  const tx = db.transaction("entries", "readwrite");
+  const store = tx.objectStore("entries");
+  const clearRequest = store.clear();
+
+  clearRequest.onsuccess = () => {
+    entriesDiv.innerHTML = '';
+    alert("All data has been cleared.");
+  };
+
+  clearRequest.onerror = () => {
+    alert("Failed to clear data.");
+  };
+};
