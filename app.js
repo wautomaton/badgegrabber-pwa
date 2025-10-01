@@ -5,6 +5,45 @@ const captureBtn = document.getElementById('capture');
 const form = document.getElementById('detailsForm');
 const entriesDiv = document.getElementById('entries');
 
+const switchBtn = document.getElementById('switchCamera');
+let currentStream;
+let videoDevices = [];
+let currentDeviceIndex = 0;
+
+// List available cameras
+navigator.mediaDevices.enumerateDevices().then(devices => {
+  videoDevices = devices.filter(device => device.kind === 'videoinput');
+  if (videoDevices.length > 0) {
+    startCamera(videoDevices[currentDeviceIndex].deviceId);
+  }
+});
+
+// Start camera with selected device
+function startCamera(deviceId) {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
+
+  navigator.mediaDevices.getUserMedia({
+    video: { deviceId: { exact: deviceId } }
+  }).then(stream => {
+    currentStream = stream;
+    video.srcObject = stream;
+  }).catch(err => {
+    console.error("Camera error:", err);
+  });
+}
+
+// Switch camera on button click
+switchBtn.onclick = () => {
+  if (videoDevices.length > 1) {
+    currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
+    startCamera(videoDevices[currentDeviceIndex].deviceId);
+  } else {
+    alert("Only one camera detected.");
+  }
+};
+
 navigator.mediaDevices.getUserMedia({ video: true })
   .then(stream => video.srcObject = stream);
 
