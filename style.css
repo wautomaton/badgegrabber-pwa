@@ -1,0 +1,35 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+  background: #f4f4f4;
+}
+
+video {
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #333;
+}
+
+form {
+  margin-top: 1em;
+}
+
+input, textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+}
+
+button {
+  padding: 0.5em 1em;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#entries img {
+  max-width: 100px;
+  display: block;
+}
