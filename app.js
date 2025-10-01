@@ -106,7 +106,7 @@ function exportToCSV() {
    let timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
 
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "badge_entries_${timestamp}.csv");
+    link.setAttribute("download", `badge_entries_${timestamp}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
