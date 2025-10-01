@@ -48,7 +48,10 @@ captureBtn.onclick = () => {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
-  imageData = canvas.toDataURL('image/png');
+  imageData = canvas.toDataURL('image/png');  
+  captureBtn.style.backgroundColor = '#28a745'; // Bootstrap green
+  captureBtn.textContent = 'Badge Captured';
+
 };
 
 // Save form data
@@ -64,6 +67,12 @@ form.onsubmit = function (e) {
   form.reset();
   imageData = null;
   loadEntries();
+
+  
+  // Reset capture button
+  captureBtn.style.backgroundColor = '#007bff';
+  captureBtn.textContent = 'Capture Badge';
+
 };
 
 // Service Worker Registration
