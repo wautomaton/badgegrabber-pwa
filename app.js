@@ -83,24 +83,49 @@ captureBtn.onclick = () => {
 };
 
 // Save form data
+
 form.onsubmit = function (e) {
   e.preventDefault();
+
   const email = document.getElementById('email').value;
   const notes = document.getElementById('notes').value;
 
+  const entry = {
+    email,
+    notes,
+    image: imageData,
+    timestamp: new Date().toISOString()
+  };
+
+  // 🔄 Export to JSON before saving
+  const jsonString = JSON.stringify(entry, null, 2);
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
+  const filename = `badge_entry_${timestamp}.json`;
+
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  // ✅ Save to IndexedDB
   const tx = db.transaction("entries", "readwrite");
   const store = tx.objectStore("entries");
-  store.add({ email, notes, image: imageData });
-  exportToCSV();
+  store.add(entry);
+
   form.reset();
   imageData = null;
   loadEntries();
 
-  
   // Reset capture button
   captureBtn.style.backgroundColor = '#007bff';
   captureBtn.textContent = 'Capture Badge';
-
 };
 
 // Service Worker Registration
@@ -138,6 +163,42 @@ function exportToCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+}
+
+function exportToJSON(data) {
+  const jsonString = JSON.stringify(data, null, 2);
+
+  // Generate timestamp
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
+  const filename = `badge_entries_${timestamp}.json`;
+
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link); // Required for Firefox
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function loadEntries() {
+  const tx = db.transaction("entries", "readonly");
+  const store = tx.objectStore("entries");
+  const request = store.getAll();
+
+  request.onsuccess = function () {
+    const entries = request.result;
+    // Display entries in UI...
+    
+    // Add export button logic
+    document.getElementById('exportBtn').onclick = () => {
+      exportToJSON(entries);
+    };
   };
 }
 
