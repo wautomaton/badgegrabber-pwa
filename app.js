@@ -149,8 +149,13 @@ function loadEntries() {
       const entryDiv = document.createElement('div');
       entryDiv.classList.add('entry');
 
-      entryDiv.innerHTML = `
-        ${entry.image}
+      const img = document.createElement('img');
+      img.src = entry.image; // Base64 string as image source
+      img.alt = 'Captured Badge';
+      img.style.maxWidth = '200px';
+
+      entryDiv.appendChild(img);
+      entryDiv.innerHTML += `
         <p><strong>Email:</strong> ${entry.email}</p>
         <p><strong>Notes:</strong> ${entry.notes}</p>
         <p><strong>Captured:</strong> ${entry.timestamp || 'Unknown'}</p>
