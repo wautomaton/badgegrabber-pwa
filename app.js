@@ -80,6 +80,9 @@ captureBtn.onclick = () => {
   captureBtn.style.backgroundColor = '#28a745'; // Bootstrap green
   captureBtn.textContent = 'Badge Captured';
 
+  // Hide video, show canvas
+  video.style.display = 'none';
+  canvas.style.display = 'block';
 };
 
 // Save form data
@@ -126,6 +129,10 @@ form.onsubmit = function (e) {
   // Reset capture button
   captureBtn.style.backgroundColor = '#007bff';
   captureBtn.textContent = 'Capture Badge';
+
+  // Show video, hide canvas
+  video.style.display = 'block';
+  canvas.style.display = 'none';
 };
 
 // Service Worker Registration

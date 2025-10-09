@@ -8,6 +8,7 @@ video {
   width: 100%;
   max-width: 400px;
   border: 2px solid #333;
+  display: block;
 }
 
 form {
@@ -45,4 +46,8 @@ button {
   max-width: 200px;
   display: block;
   margin-bottom: 0.5em;
+}
+
+canvas {
+  display: none;
 }
